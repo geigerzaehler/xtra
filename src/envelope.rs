@@ -208,6 +208,8 @@ pub(crate) trait AddressEnvelope<M: Message>:
 
     /// It is an error for this method to be called on an already weak address
     fn downgrade(&self) -> Box<dyn AddressEnvelope<M>>;
+
+    fn dup(&self) -> Box<dyn AddressEnvelope<M>>;
 }
 
 impl<A, M> AddressEnvelope<M> for Address<A>
@@ -230,6 +232,10 @@ where
     fn downgrade(&self) -> Box<dyn AddressEnvelope<M>> {
         Box::new(Address::downgrade(self))
     }
+
+    fn dup(&self) -> Box<dyn AddressEnvelope<M>> {
+        Box::new(self.clone())
+    }
 }
 
 impl<A, M> AddressEnvelope<M> for WeakAddress<A>
@@ -251,5 +257,9 @@ where
 
     fn downgrade(&self) -> Box<dyn AddressEnvelope<M>> {
         unimplemented!()
+    }
+
+    fn dup(&self) -> Box<dyn AddressEnvelope<M>> {
+        Box::new(self.clone())
     }
 }

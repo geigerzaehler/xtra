@@ -188,6 +188,14 @@ impl<M: Message> Sink<M> for MessageChannel<M> {
     }
 }
 
+impl<M: Message> Clone for MessageChannel<M> {
+    fn clone(&self) -> Self {
+        Self {
+            address: self.address.dup(),
+        }
+    }
+}
+
 /// A message channel is a channel through which you can send only one kind of message, but to
 /// any actor that can handle it. It is like [`Address`](struct.Address.html), but associated with
 /// the message type rather than the actor type. Any existing `WeakMessageChannel`s will *not* prevent the
@@ -259,5 +267,13 @@ impl<M: Message> Sink<M> for WeakMessageChannel<M> {
 
     fn poll_close(self: Pin<&mut Self>, ctx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         Pin::new(&mut self.get_mut().address).poll_close(ctx)
+    }
+}
+
+impl<M: Message> Clone for WeakMessageChannel<M> {
+    fn clone(&self) -> Self {
+        Self {
+            address: self.address.dup(),
+        }
     }
 }
